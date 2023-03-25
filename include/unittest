@@ -1,0 +1,222 @@
+#ifndef __CPPUNITTEST_DEF__
+#define __CPPUNITTEST_DEF__
+
+#include <type_traits>
+#include <string>
+#include <iostream>
+#include <typeinfo>
+#include <functional>
+#include <expect>
+
+namespace cppunittest {
+
+/*!
+    \class result_writer
+    \brief Abstract class to log the execution of unit tests.
+
+    This class is derived to implement the abstract methods to
+    log the unit test executions in required target and format.
+    Reference to its derived class is passed to the unit test
+    runner constructor to log execution of unit tests
+ */
+class result_writer {
+public:
+  /*!
+      Log description of the unit test suite and
+      the filename where unit test suite is defined.
+
+      \param desc Name or short description of unit test suite
+      \param filename Name of the test file where test suite
+          is defined
+   */
+  virtual void describe(const std::string& desc,
+      const std::string& filename) = 0;
+
+  /*!
+      Log result of the unit test case
+
+      \param desc Name or short description of unit test case
+      \param status Completion status of the unit test case.
+                Possible values:
+                \li pass - unit test completed as success
+                \li failure - unit test is marked as failed
+                        when an assertion through expect class
+                        fails and throws expecterror exception
+                \li error - unit test failed with an
+                        unexpected exception
+        \param errormessage Message that indicates the reason
+                for the failure or error
+        \param duration Time taken in nanoseconds for the
+                unit test case to complete (with any status)
+
+        \sa expect
+        \sa expecterror
+   */
+  virtual void result(const std::string& desc,
+      const std::string& status,
+      const std::string& errormessage,
+      long duration) = 0;
+
+  /*!
+      Log execution summary of the test suite
+
+      \param desc Name or short description of unit test suite
+      \param success Number of passed unit test cases in suite
+      \param failure Number of failed unit test cases in suite
+      \param error Number of unit test cases failed with
+                error status
+   */
+  virtual void summary(const std::string& desc,
+      int success,
+      int failure,
+      int error) = 0;
+};
+
+/*!
+    \class stream_writer
+    \brief Logs unit test execution status to an output stream
+
+    Implements result_writer to log unit test execution
+    status to an output stream (derived from std::ostream).
+    If no specific stream is specified, it logs to
+    stdout (\c std::cout)
+ */
+class stream_writer : public result_writer {
+private:
+  std::ostream _os;
+public:
+  /*!
+     \brief Constructor
+
+     Constructs with the output stream to which the unit test
+     execution is logged.
+
+     \param os Output stream where unit test run is logged.
+        Defaults to stdout
+   */
+  stream_writer(std::ostream& os = std::cout);
+
+  /*!  \sa result_writer::describe */
+  virtual void describe(const std::string&,
+      const std::string&) override;
+
+  /*! \sa result_writer::result */
+  virtual void result(const std::string&,
+      const std::string&,
+      const std::string&,
+      long) override;
+
+  /*! \sa result_writer::summary */
+  virtual void summary(
+      const std::string&, int, int, int) override;
+};
+
+/*!
+    \class unittest
+    \brief Unit test runner
+
+    Instance of this class represents a test suite that
+    executes a series of unit test cases
+ */
+class unittest {
+private:
+  std::string _desc;
+  result_writer* _wr;
+  int _success, _failure, _error;
+
+public:
+  /*!
+     \brief Constructor
+
+     Creates instance of unit test suite
+
+     \param desc Name or short description of test suite
+     \param filename Filename where test suite is defined
+     \param writer Instance of unit test logger to log
+                execution status of unit test cases. If not
+                specified, it defaults to stream_writer and
+                stdout
+   */
+  unittest(const std::string& desc,
+    const std::string& filename,
+    result_writer* writer = &console);
+
+  /*!
+     Executes the given function before running test cases.
+     Any setup required such as data initialization before
+     executing test cases should be implemented in the
+     parameter function.
+
+     \param func Function with the implementation for
+             testcase setup
+   */
+  unittest& setup(std::function<void()> func);
+
+  /*!
+     Executes the test function passed in the parameter.
+     All the test functions are executed regardless of the
+     validation status of prior testcases.
+     Since it returns the current unittest object, the test
+     method can be chained as many times as the number of 
+     testcases.
+     
+     \param desc Description of the testcase
+     \param func Function that performs the required
+             validation. expect assertions are placed
+             in this function
+   */
+  unittest& test(const std::string& desc,
+      std::function<void()> func);
+
+  /*!
+     Executes the given function as final step after running
+     all the test cases. This function is executed regardless
+     of the validation status of testcases.
+
+     \param func Function with the implementation for
+             testcase teardown
+   */
+  unittest& teardown(std::function<void()> func);
+
+  /*!
+    Calls summary method of the associated result writer
+   */
+  void summarize();
+
+  /*!
+     Returns the number of testcases passed validation
+   */
+  int success() const;
+
+  /*!
+     Returns the number of testcases failed validation
+   */
+  int failure() const;
+
+  /*!
+     Returns the number of testcases ended with unexpected
+     exception
+   */
+  int error() const;
+
+  /*!
+     Returns the description of the unit test suite
+   */
+  const std::string& desc() const;
+
+  /*!
+    Default result writer that writes execution log to stdout
+   */
+  static stream_writer console;
+};
+
+#ifndef __testfunc__
+#define __testfunc__(f) [&]() -> void{f;}
+#else
+#error  conflict in the definition of macro __testfunc__
+#endif
+
+};
+
+#endif //__CPPUNITTEST_DEF__
+

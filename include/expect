@@ -1,0 +1,288 @@
+#ifndef __CPPUNITTEST_EXPECT_DEF__
+#define __CPPUNITTEST_EXPECT_DEF__
+
+#include <type_traits>
+#include <string>
+#include <iostream>
+#include <typeinfo>
+#include <functional>
+
+/*! \file */
+
+namespace cppunittest {
+
+/*!
+    \class expect
+    \brief Templated class to assert the actual value against
+    the expected value.
+
+    Asserts the actual value against the expected value in unit
+    test cases. It supports following type of values for
+    assertion.
+    \li Primitive data types - bool, char, short, int, float,
+        double and their unsigned and long variants
+    \li std::string
+    \li std::type_info - to assert type of the variables.
+        This is useful in asserting exception classes expected
+        to be thrown from the code being unit tested
+    \li std::function<void()> - used in assertions for
+        exceptions
+  
+    Sample usage:
+    \code{.cpp}
+    int i = 10;
+    expect<int>(i).is(10); // assertion passed
+    expect<int>(i).is(15); // assertion failed
+    \endcode
+ */
+template <typename T> class expect {
+private:
+  static_assert(std::is_arithmetic<T>::value
+      || std::is_base_of<std::string, T>::value
+      || std::is_same<std::type_info, T>::value
+      || std::is_same<std::function<void()>, T>::value,
+    "Template type must be arithmetic, type_info, derivative of std::string or function<void()>");
+
+  T* _actual;
+  std::string _msgprefix;
+
+  expect() {}
+
+public:
+  /*!
+      \brief Constructor
+
+      Constructs with the actual value to be asserted.
+      The expected value is passed in the respective
+      assertion methods.
+
+      \param actual Actual value to be asserted
+   */
+  explicit expect(const T& actual);
+
+  /*!
+      \brief Constructor
+
+      Constructs with the actual value to be asserted.
+      The expected value is passed in the respective
+      assertion methods.
+
+      \param actual Actual value to assert
+      \param message Message to prefix in assertion exception
+                when assertion fails.
+   */
+  expect(const T& actual,
+    const std::string& message);
+
+  /*!
+      \brief Asserts for equal.
+
+      Asserts the actual is same as expected value.
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void is(const T& expected) const;
+
+  /*!
+      \brief Asserts for unequal.
+
+      Asserts the actual is not same as expected value.
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void isnot(const T& expected) const;
+
+  /*!
+      \brief Asserts for less than.
+
+      Asserts the actual is less than expected value.
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void less_than(const T& expected) const;
+
+  /*!
+      \brief Asserts for not less than.
+
+      Asserts the actual is not less than expected value. This
+      assertion can also be used to assert 'greater than or 
+      equal to' comparison
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void not_less_than(const T& expected) const;
+
+  /*!
+      \brief Asserts for greater than.
+
+      Asserts the actual is greater than expected value.
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void greater_than(const T& expected) const;
+
+  /*!
+      \brief Asserts for not greater than.
+
+      Asserts the actual is not greater than expected value.
+      This assertion can also be used to assert 'less than or 
+      equal to' comparison
+
+      \param expected Expected value against which actual is
+                compared
+   */
+  void not_greater_than(const T& expected) const;
+
+  /*!
+      \brief Asserts for true
+
+      Asserts the actual value is true
+   */
+  void istrue() const;
+
+  /*!
+      \brief Asserts for false
+
+      Asserts the actual value is false
+   */
+  void isfalse() const;
+
+  /*!
+     \brief Asserts for substring
+
+     Asserts the actual string has expected substring
+     
+     \param expected Substring expected in actual string
+   */
+  void has(const T& expected) const;
+
+  /*!
+      \brief Asserts an exception is thrown
+
+      Asserts an exception of an expected type and expected
+      error message is thrown.
+
+      \param errortype Expected exception type. This should be
+                        a derivative of std::exception
+      \param errormessage Expected exception message.
+   */
+  void throws(const std::type_info& errortype,
+    const std::string& errormessage) const;
+
+  /*!
+      \brief Asserts an exception is thrown
+
+      Asserts an exception of an expected type.
+
+      \param errortype Expected exception type. This should be
+                        a derivative of std::exception
+   */
+  void throws(const std::type_info&) const;
+
+  // operator overload for convenience
+  /*!
+       Convenience operator equivalent to \c is method.
+
+       \sa is
+   */
+  bool operator == (const T& expected);
+  /*!
+       Convenience operator equivalent to \c isnot method.
+
+       \sa isnot
+   */
+  bool operator != (const T& expected);
+  /*!
+       Convenience operator equivalent to
+       <tt>less_than</tt> method.
+
+       \sa less_than
+   */
+  bool operator < (const T& expected);
+  /*!
+       Convenience operator equivalent to
+       <tt>not_greater_than</tt> method.
+
+       \sa not_greater_than
+   */
+  bool operator <= (const T& expected);
+  /*!
+       Convenience operator equivalent to
+       <tt>greater_than</tt> method.
+
+       \sa greater_than
+   */
+  bool operator > (const T& expected);
+  /*!
+       Convenience operator equivalent to
+       <tt>not_less_than</tt> method.
+
+       \sa not_less_than
+   */
+  bool operator >= (const T& expected);
+
+};
+
+/*!
+    \typedef expectthrow
+    \brief Convenience typedef for asserting expected
+    exception.
+
+    Sample usage:
+    \code{.cpp}
+
+    // asserts exception type
+    expectthrow(__testfunc__(
+      throw std::bad_cast();
+    )).throws(typeid(std::bad_cast));
+
+    // asserts exception type and exception message
+    class myerror : public std::exception {...}
+    expectthrow(__testfunc__(
+      throw myerror("this is my error");
+    )).throws(typeid(myerror), "this is my error");
+
+    \endcode
+ */
+typedef expect<std::function<void()>> expectthrow;
+
+/*!
+    \class expecterror
+    \brief Exception thrown by assertion methods when
+        assertion fails
+ */
+class expecterror : public std::exception {
+private:
+  std::string _msg;
+  expecterror();
+public:
+  /*!
+      \brief Constructor
+
+      Constructs expecterror exception with given message
+
+      \param message Exception message. If the expect object
+              is constructed with message param, then that
+              message is prefixed in the exception message.
+   */
+  explicit expecterror(const std::string& message);
+
+  /*!
+      \brief Get exception message
+
+      Same as \c what() in std::exception
+   */
+  const char* what() const throw();
+};
+
+};
+
+#include <impl/expect.hpp>
+
+#endif //__CPPUNITTEST_EXPECT_DEF__
+

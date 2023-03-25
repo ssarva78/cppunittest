@@ -1,0 +1,17 @@
+#ifndef __TYPEUTIL_DEF__
+#define __TYPEUTIL_DEF__
+
+#include <string>
+#include <typeinfo>
+
+namespace typeutil {
+
+template <typename T> std::string classname(const T&);
+std::string classname(const std::type_info&);
+
+};
+
+#include <impl/typeutil.hpp>
+
+#endif //__TYPEUTIL_DEF__
+

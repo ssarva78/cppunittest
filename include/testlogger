@@ -1,0 +1,108 @@
+#ifndef __CPPUNITTEST_TESTLOGGER_DEF__
+#define __CPPUNITTEST_TESTLOGGER_DEF__
+
+#include <unittest>
+
+namespace cppunittest {
+
+/*!
+   \brief Log record to store execution status of each
+           testcase
+ */
+struct testcase {
+  std::string _desc;
+  std::string _status;
+  std::string _errmsg;
+  long _duration;
+};
+
+/*!
+   \class structured_writer
+   \brief Collection of log records to store execution status
+       of each testcase in the unittest suite.
+ */
+class structured_writer : public result_writer {
+protected:
+  std::string _desc, _file;
+  std::vector<testcase> _testcases;
+  bool _enable_console;
+  int _success, _failure, _error;
+public:
+  structured_writer();
+
+  /*!
+     Sets the description and the name of the testcase file
+     where the testcases are defined
+   */
+  virtual void describe(const std::string& desc,
+      const std::string& file) override;
+
+  /*!
+     Adds the log record of a testcase to the log collection
+     \param desc Description of the testcase
+     \param status Validation status of the testcase
+     \param errmsg Error message when the testcase results in
+             error or failure
+     \param duration Duration in nanoseconds took to run
+             testcase validation function
+   */
+  virtual void result(const std::string& desc,
+      const std::string& status,
+      const std::string& errmsg,
+      long duration) override;
+
+  /*!
+     Summarizes the test suite completion status for the
+     purpose of logging the execution of test suite
+
+     \param desc Description of the testcase
+     \param success Number of testcases passed validation
+     \param failure Number of testcases failed validation
+     \param error Number of testcases resulted in unexpected
+             exceptions
+   */
+  virtual void summary(
+      const std::string& desc,
+      int success, int failure, int error) override;
+
+  /*!
+      Writes all the log records to the given output stream.
+
+      \param os Output stream where the logs to be written. If
+              this parameter is not passed, the logs will
+              default to stdout
+   */
+  virtual void write(std::ostream& os = std::cout) = 0;
+
+  /*!
+     Writes all the log records to a file
+
+     \param fname Name of the file where the test suite
+             execution logs are written
+   */
+  virtual void write(const std::string&) final;
+
+  /*!
+      Enables or disables default console logging in addition
+      to building collection of log records
+   */
+  virtual bool& console() final;
+};
+
+/*!
+   \class default_xml_writer
+   \brief Writes log records in an XML file in the format
+           that sonarqube can parse in order to display
+           unit test status in sonarqube dashboard
+ */
+class default_xml_writer final : public structured_writer {
+public:
+  default_xml_writer();
+  using structured_writer::write;
+  void write(std::ostream& = std::cout) override;
+};
+
+};
+
+#endif //__CPPUNITTEST_TESTLOGGER_DEF__
+
