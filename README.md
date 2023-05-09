@@ -125,7 +125,7 @@ int testfizzbuzz() {
   ))
   .test("Divisibility by 3", __testfunc__(
     expect<std::string>(fizzorbuzz(i)).is("fizz");
-    expect<std::string>(fizzorbuzz(9) == "fizz";
+    expect<std::string>(fizzorbuzz(9)) == "fizz"; // equivalent to 'is'
   ))
   .test("Divisibility by 5", __testfunc__(
     expect<std::string>(fizzorbuzz(5)).is("buzz");
