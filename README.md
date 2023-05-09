@@ -45,14 +45,14 @@ __<=__ | not_greater_than
 __>__ | greater_than
 __>=__ | not_less_than
 
-Assertion method throws __cppunittest :: excepterror__ when assertion fails. `cppunittest :: excepterror` is derived from `std :: exception`.
+Assertion method throws __cppunittest :: expecterror__ when assertion fails. `cppunittest :: excepterror` is derived from `std :: exception`.
 
 ```C++
 
 // To assert integer values
 int x = 5;
 expect<int>(x) == 5; // same as expect<int>(x).is(5);
-expect<int>(x).is(7); // throws excepterror exception
+expect<int>(x).is(7); // throws expecterror exception
 
 expect<std::string>("helloworld").has("hello");
 
