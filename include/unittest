@@ -94,7 +94,7 @@ public:
      \param os Output stream where unit test run is logged.
         Defaults to stdout
    */
-  stream_writer(std::ostream& os = std::cout);
+  explicit stream_writer(std::ostream& os = std::cout);
 
   /*!  \sa result_writer::describe */
   virtual void describe(const std::string&,

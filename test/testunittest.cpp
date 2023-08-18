@@ -87,16 +87,6 @@ int testfizzbuzz() {
     expect<std::string>("some text").has("me te");
     expect<std::string>("some text").has("text1"); // throw expect error
   ))
-  .test("check numerical compare operators", __testfunc__(
-    expect<int>(5) == 5;
-    expect<int>(5) != 6;
-    expect<int>(5) < 6;
-    expect<int>(5) <= 6;
-    expect<int>(5) <= 5;
-    expect<int>(5) > 3;
-    expect<int>(5) >= 3;
-    expect<int>(5) >= 5;
-  ))
   .test("expect error 1", __testfunc__(
     expectthrow(__testfunc__(fizzorbuzz(-2);)).throws(
         typeid(fizzbuzzerror),

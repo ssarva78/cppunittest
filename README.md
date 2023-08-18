@@ -35,24 +35,14 @@ __not_greater_than()__ | asserts that the actual is less than or equal to expect
 __has()__ | asserts that the actual string has expected string as a substring
 __throws()__ | asserts an exception is thrown from a function
 
-These methods also have overloaded operator equivalents
-operator | method equivalent
---------|-----------
-__==__ | is
-__!=__ | isnot
-__<__ | less_than
-__<=__ | not_greater_than
-__>__ | greater_than
-__>=__ | not_less_than
-
-Assertion method throws __cppunittest :: excepterror__ when assertion fails. `cppunittest :: excepterror` is derived from `std :: exception`.
+Assertion method throws __cppunittest :: expecterror__ when assertion fails. `cppunittest :: expecterror` is derived from `std :: exception`.
 
 ```C++
 
 // To assert integer values
 int x = 5;
 expect<int>(x) == 5; // same as expect<int>(x).is(5);
-expect<int>(x).is(7); // throws excepterror exception
+expect<int>(x).is(7); // throws expecterror exception
 
 expect<std::string>("helloworld").has("hello");
 
@@ -63,7 +53,7 @@ expect<std::type_info>(typeid(c)).is(typeid(C));
 
 ```
 
-__expectthrow__ is a convenience typedef equivalent to expect::throws method
+__expectthrow__ is a convenience typedef equivalent to expect<std::function<void()>>
 
 ```C++
 // asserts exception type
@@ -84,7 +74,10 @@ Test methods, setup and teardown methods are defined through `cppunittest :: uni
 
 Methods | Usage
 --------|-----------
-__unittest(std::string, std::string, result_writer)__ | Constructor. The first argument is a textual description of the collection of test methods. The second argument is the filename where the testcases are defined. Third argument is where the test exections are logged. Passing instance of default_xml_writer will produce unittest report file in the format that sonarqube recognizes.
+__unittest(std::string, std::string, result_writer)__ | Constructor.
+* The first argument is a textual description of the collection of test methods.
+* The second argument is the filename where the testcases are defined.
+* Third argument is optional and specifies where the test executions are logged. If not provided, the executions are logged to stdout. Passing instance of default_xml_writer will produce unittest report file in the format that sonarqube recognizes.
 __unittest& setup (std::function<void()>)__ | Takes function as the argument that has logic to perform all initialization steps required to run test cases. This method can be called any number of times in between testcases
 __unittest& test (std::function<void()>)__ | Takes function as the argument that has steps to run the test case and its assertions.
 __unittest& teardown (std::function<void()>)__ | Takes function as the argument that does clean up and tear down of any data setup in `setup` method.
@@ -125,7 +118,6 @@ int testfizzbuzz() {
   ))
   .test("Divisibility by 3", __testfunc__(
     expect<std::string>(fizzorbuzz(i)).is("fizz");
-    expect<std::string>(fizzorbuzz(9) == "fizz";
   ))
   .test("Divisibility by 5", __testfunc__(
     expect<std::string>(fizzorbuzz(5)).is("buzz");

@@ -214,42 +214,6 @@ template <typename T> inline void expect<T> :: throws(
 
 }
 
-template <typename T> inline
-bool expect<T> :: operator == (const T& expected) {
-  is(expected);
-  return true;
-}
-
-template <typename T> inline
-bool expect<T> :: operator != (const T& expected) {
-  isnot(expected);
-  return true;
-}
-
-template <typename T> inline
-bool expect<T> :: operator < (const T& expected) {
-  less_than(expected);
-  return true;
-}
-
-template <typename T> inline
-bool expect<T> :: operator <= (const T& expected) {
-  not_greater_than(expected);
-  return true;
-}
-
-template <typename T> inline
-bool expect<T> :: operator > (const T& expected) {
-  greater_than(expected);
-  return true;
-}
-
-template <typename T> inline
-bool expect<T> :: operator >= (const T& expected) {
-  not_less_than(expected);
-  return true;
-}
-
 inline expecterror :: expecterror() {}
 inline expecterror :: expecterror(const std::string& msg) :
     _msg(msg) {}

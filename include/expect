@@ -184,48 +184,6 @@ public:
    */
   void throws(const std::type_info&) const;
 
-  // operator overload for convenience
-  /*!
-       Convenience operator equivalent to \c is method.
-
-       \sa is
-   */
-  bool operator == (const T& expected);
-  /*!
-       Convenience operator equivalent to \c isnot method.
-
-       \sa isnot
-   */
-  bool operator != (const T& expected);
-  /*!
-       Convenience operator equivalent to
-       <tt>less_than</tt> method.
-
-       \sa less_than
-   */
-  bool operator < (const T& expected);
-  /*!
-       Convenience operator equivalent to
-       <tt>not_greater_than</tt> method.
-
-       \sa not_greater_than
-   */
-  bool operator <= (const T& expected);
-  /*!
-       Convenience operator equivalent to
-       <tt>greater_than</tt> method.
-
-       \sa greater_than
-   */
-  bool operator > (const T& expected);
-  /*!
-       Convenience operator equivalent to
-       <tt>not_less_than</tt> method.
-
-       \sa not_less_than
-   */
-  bool operator >= (const T& expected);
-
 };
 
 /*!
