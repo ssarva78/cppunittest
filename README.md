@@ -84,10 +84,7 @@ Test methods, setup and teardown methods are defined through `cppunittest :: uni
 
 Methods | Usage
 --------|-----------
-__unittest(std::string, std::string, result_writer)__ | Constructor.
-* The first argument is a textual description of the collection of test methods.
-* The second argument is the filename where the testcases are defined.
-* Third argument is optional and specifies where the test executions are logged. If not provided, the executions are logged to stdout. Passing instance of default_xml_writer will produce unittest report file in the format that sonarqube recognizes.
+__unittest(std::string, std::string, result_writer)__ | Constructor. The first argument is a textual description of the collection of test methods. The second argument is the filename where the testcases are defined. Third argument is optional and specifies where the test executions are logged. If not provided, the executions are logged to stdout. Passing instance of default_xml_writer will produce unittest report file in the format that sonarqube recognizes.
 __unittest& setup (std::function<void()>)__ | Takes function as the argument that has logic to perform all initialization steps required to run test cases. This method can be called any number of times in between testcases
 __unittest& test (std::function<void()>)__ | Takes function as the argument that has steps to run the test case and its assertions.
 __unittest& teardown (std::function<void()>)__ | Takes function as the argument that does clean up and tear down of any data setup in `setup` method.
@@ -128,10 +125,6 @@ int testfizzbuzz() {
   ))
   .test("Divisibility by 3", __testfunc__(
     expect<std::string>(fizzorbuzz(i)).is("fizz");
-<<<<<<< HEAD
-=======
-    expect<std::string>(fizzorbuzz(9)) == "fizz"; // equivalent to 'is'
->>>>>>> f55a2a017a9c5412d8b735f3a28d549ae12855b8
   ))
   .test("Divisibility by 5", __testfunc__(
     expect<std::string>(fizzorbuzz(5)).is("buzz");
