@@ -35,7 +35,17 @@ __not_greater_than()__ | asserts that the actual is less than or equal to expect
 __has()__ | asserts that the actual string has expected string as a substring
 __throws()__ | asserts an exception is thrown from a function
 
-Assertion method throws __cppunittest :: expecterror__ when assertion fails. `cppunittest :: expecterror` is derived from `std :: exception`.
+These methods also have overloaded operator equivalents
+operator | method equivalent
+--------|-----------
+__==__ | is
+__!=__ | isnot
+__<__ | less_than
+__<=__ | not_greater_than
+__>__ | greater_than
+__>=__ | not_less_than
+
+Assertion method throws __cppunittest :: expecterror__ when assertion fails. `cppunittest :: excepterror` is derived from `std :: exception`.
 
 ```C++
 
@@ -118,6 +128,10 @@ int testfizzbuzz() {
   ))
   .test("Divisibility by 3", __testfunc__(
     expect<std::string>(fizzorbuzz(i)).is("fizz");
+<<<<<<< HEAD
+=======
+    expect<std::string>(fizzorbuzz(9)) == "fizz"; // equivalent to 'is'
+>>>>>>> f55a2a017a9c5412d8b735f3a28d549ae12855b8
   ))
   .test("Divisibility by 5", __testfunc__(
     expect<std::string>(fizzorbuzz(5)).is("buzz");
