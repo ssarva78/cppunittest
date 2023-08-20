@@ -35,16 +35,6 @@ __not_greater_than()__ | asserts that the actual is less than or equal to expect
 __has()__ | asserts that the actual string has expected string as a substring
 __throws()__ | asserts an exception is thrown from a function
 
-These methods also have overloaded operator equivalents
-operator | method equivalent
---------|-----------
-__==__ | is
-__!=__ | isnot
-__<__ | less_than
-__<=__ | not_greater_than
-__>__ | greater_than
-__>=__ | not_less_than
-
 Assertion method throws __cppunittest :: expecterror__ when assertion fails. `cppunittest :: excepterror` is derived from `std :: exception`.
 
 ```C++
