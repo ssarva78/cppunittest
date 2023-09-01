@@ -28,7 +28,14 @@ template <typename K> std::string _errmsg(
 template <typename K> std::string _errmsg(
     const std::string& prefix,
     const K& actual, const K& expect, bool isnot = false) {
-  return _errmsg(prefix, "", actual, expect, isnot);
+  //return _errmsg(prefix, "", actual, expect, isnot);
+  if constexpr(std::is_same<std::type_info, K>::value) {
+    return _errmsg<std::string>(prefix, "",
+        typeutil :: classname(actual),
+        typeutil :: classname(expect), isnot);
+  } else {
+    return _errmsg(prefix, "", actual, expect, isnot);
+  }
 }
 
 template <typename T> inline expect<T> :: expect(
@@ -42,42 +49,26 @@ template <typename T> inline expect<T> :: expect(
   {}
 
 template <typename T> inline
-void expect<T> :: is(const T& expected) const {
+bool _equals_(const T& actual, const T& expected) {
   if constexpr(std::is_same<std::function<void()>, T>::value) {
     static_assert(
         !std::is_same<std::function<void()>, T>::value,
         "Template type must not be function<void()>");
   }
-  else if constexpr(std::is_same<std::type_info, T>::value) {
-    std::string actualname = typeutil :: classname(*_actual),
-        expectedname = typeutil :: classname(expected);
-    if (*_actual != expected)
-      throw expecterror(
-        _errmsg(_msgprefix, actualname, expectedname));
-  } else {
-    if (*_actual != expected)
-      throw expecterror(
-        _errmsg(_msgprefix, *_actual, expected));
+  return actual == expected;
+}
+
+template <typename T> inline
+void expect<T> :: is(const T& expected) const {
+  if (!_equals_(*_actual, expected)) {
+    throw expecterror(_errmsg(_msgprefix, *_actual, expected));
   }
 }
 
 template <typename T> inline
 void expect<T> :: isnot(const T& expected) const {
-  if constexpr(std::is_same<std::function<void()>, T>::value) {
-    static_assert(
-        !std::is_same<std::function<void()>, T>::value,
-        "Template type must not be function<void()>");
-  }
-  else if constexpr(std::is_same<std::type_info, T>::value) {
-    std::string actualname = typeutil :: classname(*_actual),
-        expectedname = typeutil :: classname(expected);
-    if (*_actual == expected)
-      throw expecterror(
-        _errmsg(_msgprefix, actualname, expectedname, true));
-  } else {
-    if (*_actual == expected)
-      throw expecterror(
-        _errmsg(_msgprefix, *_actual, expected, true));
+  if (_equals_(*_actual, expected)) {
+    throw expecterror(_errmsg(_msgprefix, *_actual, expected));
   }
 }
 

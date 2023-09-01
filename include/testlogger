@@ -2,6 +2,7 @@
 #define __CPPUNITTEST_TESTLOGGER_DEF__
 
 #include <unittest>
+#include <vector>
 
 namespace cppunittest {
 

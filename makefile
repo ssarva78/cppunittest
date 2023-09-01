@@ -14,6 +14,7 @@ ifeq ($(PREFIX),)
 endif
 
 CPPCHECK := $(shell which cppcheck 2>/dev/null)
+SYSTYPE := $(shell uname)
 
 HEADER_INSTALL_DIR=$(PREFIX)/include/cppunittest
 LIB_INSTALL_DIR=$(PREFIX)/lib
@@ -53,10 +54,22 @@ test/testdefaultxmlwriter.cpp: build
 	@echo
 
 coverage:
+	@echo systype=$(SYSTYPE)
+ifeq ($(SYSTYPE), Darwin)
+	@mv unittest.gcno impl/
+	@mv unittest.gcda impl/
+	@mv testlogger.gcno impl/
+	@mv testlogger.gcda impl/
+	@mv testdefaultxmlwriter.gcno impl/
+	@mv testdefaultxmlwriter.gcda impl/
+	@mv testunittest.gcno impl/
+	@mv testunittest.gcda impl/
+else
 	@mv lib/libcppunittest.so-unittest.gcno impl/unittest.gcno
 	@mv lib/libcppunittest.so-unittest.gcda impl/unittest.gcda
 	@mv lib/libcppunittest.so-testlogger.gcno impl/testlogger.gcno
 	@mv lib/libcppunittest.so-testlogger.gcda impl/testlogger.gcda
+endif
 	@gcov --relative-only --demangled-names impl/*.cpp test/*.cpp
 	@mkdir -p $(REPORT_DIR)
 	@mv *.gcov $(REPORT_DIR)/
