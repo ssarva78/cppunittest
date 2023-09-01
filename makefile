@@ -60,10 +60,10 @@ ifeq ($(SYSTYPE), Darwin)
 	@mv unittest.gcda impl/
 	@mv testlogger.gcno impl/
 	@mv testlogger.gcda impl/
-	@mv testdefaultxmlwriter.gcno impl/
-	@mv testdefaultxmlwriter.gcda impl/
-	@mv testunittest.gcno impl/
-	@mv testunittest.gcda impl/
+	@mv testdefaultxmlwriter.gcno test/
+	@mv testdefaultxmlwriter.gcda test/
+	@mv testunittest.gcno test/
+	@mv testunittest.gcda test/
 else
 	@mv lib/libcppunittest.so-unittest.gcno impl/unittest.gcno
 	@mv lib/libcppunittest.so-unittest.gcda impl/unittest.gcda
