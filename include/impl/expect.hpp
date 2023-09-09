@@ -3,9 +3,35 @@
 
 #include <sstream>
 #include <sys/time.h>
-#include <typeutil>
+
+#ifdef __GNUG__
+#include<cxxabi.h>
+#endif
 
 namespace cppunittest {
+
+template<typename T> inline std::string classname(const T& o) {
+  const std::type_info& t = typeid(o);
+  return classname(t);
+}
+
+inline std::string classname(const std::type_info& t) {
+
+  #ifdef __GNUG__
+
+    int status;
+    char *nm = abi::__cxa_demangle(t.name(), NULL, NULL, &status);
+    std::string c_nm(status == 0? nm : t.name());
+    free(nm);
+
+    return c_nm;
+
+  #else
+
+    return static_cast<std::string>(t.name());
+
+  #endif
+}
 
 template <typename K> std::string _errmsg(
     const std::string& prefix,
@@ -28,11 +54,10 @@ template <typename K> std::string _errmsg(
 template <typename K> std::string _errmsg(
     const std::string& prefix,
     const K& actual, const K& expect, bool isnot = false) {
-  //return _errmsg(prefix, "", actual, expect, isnot);
   if constexpr(std::is_same<std::type_info, K>::value) {
     return _errmsg<std::string>(prefix, "",
-        typeutil :: classname(actual),
-        typeutil :: classname(expect), isnot);
+        classname(actual),
+        classname(expect), isnot);
   } else {
     return _errmsg(prefix, "", actual, expect, isnot);
   }
@@ -177,7 +202,7 @@ template <typename T> inline void expect<T> :: throws(
         expect<std::string>(e.what()).is(errmsg);
     } catch(...) {
         throw expecterror("expected exception of type " +
-            typeutil :: classname(errtype));
+            classname(errtype));
     }
   }
 
@@ -199,7 +224,7 @@ template <typename T> inline void expect<T> :: throws(
         expect<std::type_info>(typeid(e)).is(errtype);
     } catch(...) {
         throw expecterror("expected exception of type " +
-            typeutil :: classname(errtype));
+            classname(errtype));
     }
   }
 

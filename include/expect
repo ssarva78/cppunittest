@@ -238,6 +238,9 @@ public:
   const char* what() const throw();
 };
 
+template <typename T> std::string classname(const T&);
+std::string classname(const std::type_info&);
+
 };
 
 #include <impl/expect.hpp>

@@ -4,7 +4,6 @@
 #include <sstream>
 #include <sys/time.h>
 #include <unittest>
-#include <typeutil>
 
 namespace cppunittest {
 
@@ -82,7 +81,7 @@ unittest& unittest :: test(const std::string& desc,
     duration = _now_() - starttime;
     status = "failure";
     std::stringstream ss;
-    ss << typeutil :: classname(e) << ": " << e.what();
+    ss << classname(e) << ": " << e.what();
     msg = ss.str();
     _failure ++;
   } catch (const std::exception& e) {
